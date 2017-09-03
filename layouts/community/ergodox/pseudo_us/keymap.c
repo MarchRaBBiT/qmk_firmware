@@ -22,6 +22,11 @@ enum custom_keycodes {
   RGB_SLD
 };
 
+enum tapdance_def {
+  TD_LANG = 0,
+};
+
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  /* # Keymap 0: Basic layer
   #
@@ -52,7 +57,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB,         KC_Q,    KC_W,   KC_E,   KC_R,   KC_T,  KC_LBRC,
         KC_LCTL,        KC_A,    KC_S,   KC_D,   KC_F,   KC_G,
         KC_LSFT,        KC_Z,    KC_X,   KC_C,   KC_V,   KC_B,  KC_LPRN,
-        KC_HYPR,        KC_RCTL, KC_LALT,KC_LGUI,KC_MHEN,
+        KC_HYPR,        KC_RCTL, KC_LALT,KC_LGUI,TD(TD_LANG),
                                                        TG(MEDIA), KC_PGUP,
                                                                   KC_PGDN,
                                                KC_SPC, KC_RSFT,   LALT(KC_LSFT),
@@ -73,7 +78,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB,         KC_Q,    KC_W,   KC_E,   KC_R,   KC_T,   KC_FN2,
         KC_LCTL,        KC_A,    KC_S,   KC_D,   KC_F,   KC_G,
         OSM(MOD_LSFT),  KC_Z,    KC_X,   KC_C,   KC_V,   KC_B,   S(KC_8),
-        KC_HYPR,        KC_RCTL, KC_LALT,KC_LGUI,KC_MHEN,
+        KC_HYPR,        KC_RCTL, KC_LALT,KC_LGUI,TD(TD_LANG),
                                             TG(MEDIA),    KC_PGUP,
                                                           KC_PGDN,
                                     KC_SPC, OSM(MOD_LSFT),LALT(KC_LSFT),
@@ -161,18 +166,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
        KC_TRNS,KC_HASH,KC_DLR, KC_LPRN,KC_RPRN,KC_GRV,
        KC_TRNS,KC_PERC,KC_CIRC,KC_LBRC,KC_RBRC,KC_TILD,KC_TRNS,
           EPRM,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,
-                                       RGB_MOD,KC_TRNS,
+                                       KC_TRNS,KC_TRNS,
                                                KC_TRNS,
-                               RGB_VAD,RGB_VAI,KC_TRNS,
+                               KC_TRNS,KC_TRNS,KC_TRNS,
        // right hand
        KC_TRNS, KC_F6,   KC_F7,  KC_F8,   KC_F9,   KC_F10,  KC_F11,
        KC_TRNS, KC_UP,   KC_7,   KC_8,    KC_9,    KC_ASTR, KC_F12,
                 KC_DOWN, KC_4,   KC_5,    KC_6,    KC_PLUS, KC_TRNS,
        KC_TRNS, KC_AMPR, KC_1,   KC_2,    KC_3,    KC_BSLS, KC_TRNS,
                          KC_TRNS,KC_DOT,  KC_0,    KC_EQL,  KC_TRNS,
-       RGB_TOG, RGB_SLD,
+       KC_TRNS, KC_TRNS,
        KC_TRNS,
-       KC_TRNS, RGB_HUD, RGB_HUI
+       KC_TRNS, KC_TRNS, KC_TRNS
 ),
 /* Keymap 5: Media and mouse keys
  *
@@ -250,6 +255,25 @@ void action_function(keyrecord_t *record, uint8_t id, uint8_t opt) {
 const uint16_t PROGMEM fn_actions[] = {
     [1] = ACTION_LAYER_TAP_TOGGLE(SYMBOL),                // FN1 - Momentary Layer 1 (Symbols)
     [2] = ACTION_FUNCTION(PSEUDO_US_FUNCTION),          // FN2 - pseudo US mode
+};
+
+void dance_lang (qk_tap_dance_state_t *state, void *user_data) {
+  if (state->count == 1) {
+    register_code (KC_MHEN);
+    unregister_code (KC_MHEN);
+    register_code (KC_LANG2);
+    unregister_code (KC_LANG2);
+  } else {
+    register_code (KC_HENK);
+    unregister_code (KC_HENK);
+    register_code (KC_LANG1);
+    unregister_code (KC_LANG1);
+  }
+};
+
+//Tap Dance Definitions
+qk_tap_dance_action_t tap_dance_actions[] = {
+  [TD_LANG]  = ACTION_TAP_DANCE_FN (dance_lang)
 };
 
 const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
