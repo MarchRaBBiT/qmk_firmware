@@ -81,7 +81,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_HYPR,        KC_RCTL, KC_LALT,KC_LGUI,TD(TD_LANG),
                                             TG(MEDIA),    KC_PGUP,
                                                           KC_PGDN,
-                                    KC_SPC, OSM(MOD_LSFT),LALT(KC_LSFT),
+                                    KC_SPC, OSM(MOD_RSFT),LALT(KC_LSFT),
         // right hand
      LALT(LCTL(KC_DEL)), KC_FN2,   KC_FN2,  KC_FN2,   KC_FN2,  KC_FN2, KC_FN2,
              KC_FN2,     KC_Y,     KC_U  ,  KC_I,     KC_O,    KC_P,   KC_FN2,
