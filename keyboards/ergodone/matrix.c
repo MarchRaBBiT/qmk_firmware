@@ -25,7 +25,7 @@
  */
 
 #ifndef DEBOUNCE
-#   define DEBOUNCE	5
+#   define DEBOUNCE	2
 #endif
 
 /* matrix state(1:on, 0:off) */
