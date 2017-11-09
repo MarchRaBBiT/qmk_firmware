@@ -34,4 +34,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // #define _MASTER_RIGHT
 // #define EE_HANDS
 
+#undef TAPPING_TERM
+#define TAPPING_TERM 230
+
+#define ONESHOT_TAP_TOGGLE 2
+#define ONESHOT_TIMEOUT 2000
 #endif
