@@ -91,7 +91,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
              KC_DEL,        TG(SYMBOL),
              KC_BSPC,
              KC_RALT,KC_LCTL, KC_ENT
-        
+
     ),
     /* Keymap 2: `DVORAK layer
  *
@@ -135,7 +135,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
        KC_LALT,       CTL_T(KC_ESC),
        KC_PGUP,
        KC_PGDN,KC_DEL, KC_ENT
-), 
+),
 
 /* Keymap 4: Symbol Layer
  *
@@ -342,7 +342,7 @@ void matrix_scan_user(void) {
             break;
         case MEDIA:
             ergodox_right_led_2_on();
-            break; 
+            break;
         case SMEDIA:
             ergodox_right_led_2_on();
             ergodox_right_led_3_on();
