@@ -8,16 +8,16 @@ extern keymap_config_t keymap_config;
 // The underscores don't mean anything - you can have a layer called STUFF or any other name.
 // Layer names don't all need to be of the same length, obviously, and you can also skip them
 // entirely and just use numbers.
-#define _QWERTY 0
-#define _COLEMAK 1
-#define _DVORAK 2
-#define _LOWER 3
-#define _RAISE 4
-#define _QWERTY_JP 5
-#define _COLEMAK_JP 6
-#define _DVORAK_JP 7
-#define _LOWER_JP 8
-#define _RAISE_JP 9
+#define _QWERTY 5
+#define _COLEMAK 6
+#define _DVORAK 7
+#define _LOWER 8
+#define _RAISE 9
+#define _QWERTY_JP 0
+#define _COLEMAK_JP 1
+#define _DVORAK_JP 2
+#define _LOWER_JP 3
+#define _RAISE_JP 4
 #define _ADJUST 16
 
 enum custom_keycodes {
@@ -26,12 +26,11 @@ enum custom_keycodes {
   DVORAK,
   LOWER,
   RAISE,
-  QWERTY_JP,
-  COLEMAK_JP,
-  DVORAK_JP,
-  LOWER_JP,
-  RAISE_JP,
   ADJUST,
+};
+
+enum tapdance_def {
+  TD_LANG = 0,
 };
 
 // Fillers to make layering more clear
@@ -75,6 +74,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |Adjust| Ctrl | Alt  | GUI  |Lower |Space |Space |Raise | Left | Down |  Up  |Right |
  * `-----------------------------------------------------------------------------------'
  */
+[_COLEMAK_JP] = KEYMAP( \
+  KC_TAB,  KC_Q,    KC_W,    KC_F,    KC_P,    KC_G,    KC_J,    KC_L,    KC_U,    KC_Y,    KC_FN1,  KC_BSPC, \
+  KC_ESC,  KC_A,    KC_R,    KC_S,    KC_T,    KC_D,    KC_H,    KC_N,    KC_E,    KC_I,    KC_O,    KC_FN1,  \
+  KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_K,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ENT , \
+  ADJUST,  KC_LCTL, KC_LALT, KC_LGUI, LOWER,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT \
+),
 [_COLEMAK] = KEYMAP( \
   KC_TAB,  KC_Q,    KC_W,    KC_F,    KC_P,    KC_G,    KC_J,    KC_L,    KC_U,    KC_Y,    KC_SCLN, KC_BSPC, \
   KC_ESC,  KC_A,    KC_R,    KC_S,    KC_T,    KC_D,    KC_H,    KC_N,    KC_E,    KC_I,    KC_O,    KC_QUOT, \
@@ -93,6 +98,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |Adjust| Ctrl | Alt  | GUI  |Lower |Space |Space |Raise | Left | Down |  Up  |Right |
  * `-----------------------------------------------------------------------------------'
  */
+[_DVORAK_JP] = KEYMAP( \
+  KC_TAB,  KC_FN1,  KC_COMM, KC_DOT,  KC_P,    KC_Y,    KC_F,    KC_G,    KC_C,    KC_R,    KC_L,    KC_BSPC, \
+  KC_ESC,  KC_A,    KC_O,    KC_E,    KC_U,    KC_I,    KC_D,    KC_H,    KC_T,    KC_N,    KC_S,    KC_SLSH, \
+  KC_LSFT, KC_FN1,  KC_Q,    KC_J,    KC_K,    KC_X,    KC_B,    KC_M,    KC_W,    KC_V,    KC_Z,    KC_ENT , \
+  ADJUST,  KC_LCTL, KC_LALT, KC_LGUI, LOWER,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT \
+),
 [_DVORAK] = KEYMAP( \
   KC_TAB,  KC_QUOT, KC_COMM, KC_DOT,  KC_P,    KC_Y,    KC_F,    KC_G,    KC_C,    KC_R,    KC_L,    KC_BSPC, \
   KC_ESC,  KC_A,    KC_O,    KC_E,    KC_U,    KC_I,    KC_D,    KC_H,    KC_T,    KC_N,    KC_S,    KC_SLSH, \
@@ -136,7 +147,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_RAISE_JP] = KEYMAP( \
   KC_FN1,  KC_FN1,  KC_FN1,  KC_FN1,  KC_FN1,  KC_FN1,  KC_FN1,  KC_FN1,  KC_FN1,  KC_FN1,  KC_FN1,  KC_BSPC, \
-  KC_DEL,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_MINS, KC_EQL,  KC_LBRC, KC_RBRC, KC_BSLS, \
+  KC_DEL,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_MINS, KC_FN1,  KC_FN1,  KC_FN1,  KC_FN1,  \
   _______, KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_NUHS, KC_NUBS, _______, _______, _______, \
   _______, _______, _______, _______, _______, _______, _______, _______, KC_MNXT, KC_VOLD, KC_VOLU, KC_MPLY \
 ),[_RAISE] = KEYMAP( \
@@ -173,6 +184,29 @@ float tone_dvorak[][2]     = SONG(DVORAK_SOUND);
 float tone_colemak[][2]    = SONG(COLEMAK_SOUND);
 #endif
 
+const uint16_t PROGMEM fn_actions[] = {
+  [1] = ACTION_FUNCTION(PSEUDO_US_FUNCTION),          // FN1 - pseudo US mode
+};
+
+void dance_lang (qk_tap_dance_state_t *state, void *user_data) {
+if (state->count == 1) {
+  register_code (KC_MHEN);
+  unregister_code (KC_MHEN);
+  register_code (KC_LANG2);
+  unregister_code (KC_LANG2);
+} else {
+  register_code (KC_HENK);
+  unregister_code (KC_HENK);
+  register_code (KC_LANG1);
+  unregister_code (KC_LANG1);
+}
+};
+
+//Tap Dance Definitions
+qk_tap_dance_action_t tap_dance_actions[] = {
+  [TD_LANG]  = ACTION_TAP_DANCE_FN (dance_lang)
+};
+
 void persistent_default_layer_set(uint16_t default_layer) {
   eeconfig_update_default_layer(default_layer);
   default_layer_set(default_layer);
@@ -185,7 +219,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         #ifdef AUDIO_ENABLE
           PLAY_SONG(tone_qwerty);
         #endif
-        persistent_default_layer_set(1UL<<_QWERTY);
+        persistent_default_layer_set(1UL<<_QWERTY_JP);
       }
       return false;
       break;
@@ -194,7 +228,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         #ifdef AUDIO_ENABLE
           PLAY_SONG(tone_colemak);
         #endif
-        persistent_default_layer_set(1UL<<_COLEMAK);
+        persistent_default_layer_set(1UL<<_COLEMAK_JP);
       }
       return false;
       break;
@@ -203,7 +237,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         #ifdef AUDIO_ENABLE
           PLAY_SONG(tone_dvorak);
         #endif
-        persistent_default_layer_set(1UL<<_DVORAK);
+        persistent_default_layer_set(1UL<<_DVORAK_JP);
       }
       return false;
       break;
@@ -238,3 +272,33 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   }
   return true;
 }
+
+void action_function(keyrecord_t *record, uint8_t id, uint8_t opt) {
+  
+  switch (id) {
+    case PSEUDO_US_FUNCTION:
+        layer = biton32(layer_state);
+        base = _QWERTY;
+        switch (layer) {
+          case _QWERTY_JP:
+            base = _QWERTY;
+            break;
+          case _COLEMAK_JP:
+            base = _COLEMAK;
+            break;
+          case _DVORAK_JP:
+            base = _DVORAK;
+            break;
+          case _LOWER_JP:
+            base = _LOWER;
+            break;
+          case _RAISE_JP:
+            base = _RAISE;
+            break;
+          default:
+            base = _QWERTY;
+        }
+        action_pseudo_lut(record, base, keymap_jis2us);
+        break;
+      }
+  }
