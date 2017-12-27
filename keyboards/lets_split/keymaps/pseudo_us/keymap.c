@@ -13,22 +13,25 @@ void dance_lang (qk_tap_dance_state_t *state, void *user_data);
 // The underscores don't mean anything - you can have a layer called STUFF or any other name.
 // Layer names don't all need to be of the same length, obviously, and you can also skip them
 // entirely and just use numbers.
-#define _QWERTY 5
-#define _COLEMAK 6
-#define _DVORAK 7
-#define _LOWER 8
-#define _RAISE 9
+#define _QWERTY 6
+#define _COLEMAK 7
+#define _DVORAK 8
+#define _EUCALYN 9
+#define _LOWER 10
+#define _RAISE 11
 #define _QWERTY_JP 0
 #define _COLEMAK_JP 1
 #define _DVORAK_JP 2
-#define _LOWER_JP 3
-#define _RAISE_JP 4
+#define _EUCALYN_JP 3
+#define _LOWER_JP 4
+#define _RAISE_JP 5
 #define _ADJUST 16
 
 enum custom_keycodes {
   QWERTY = SAFE_RANGE,
   COLEMAK,
   DVORAK,
+  EUCALYN,
   LOWER,
   RAISE,
   ADJUST,
@@ -120,6 +123,30 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ADJUST,  KC_LCTL, KC_LALT, KC_LGUI, LOWER,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT \
 ),
 
+/* Eucalyn
+ * ,-----------------------------------------------------------------------------------.
+ * | Tab  |   "  |   ,  |   .  |   F  |   M  |   R  |   D  |   Y  |   P  |   L  | Bksp |
+ * |------+------+------+------+------+-------------+------+------+------+------+------|
+ * | Esc  |   A  |   O  |   E  |   U  |   I  |   G  |   T  |   K  |   S  |   N  |  /   |
+ * |------+------+------+------+------+------|------+------+------+------+------+------|
+ * | Shift|   Z  |   X  |   C  |   V  |   W  |   B  |   H  |   J  |   L  |   /  |Enter |
+ * |------+------+------+------+------+------+------+------+------+------+------+------|
+ * |Adjust| Ctrl | Alt  | GUI  |Lower |Space |Space |Raise | Left | Down |  Up  |Right |
+ * `-----------------------------------------------------------------------------------'
+ */
+[_EUCALYN] = KEYMAP( \
+  KC_TAB,  KC_QUOT, KC_COMM, KC_DOT,  KC_F,    KC_M,    KC_R,    KC_D,    KC_Y,    KC_P,    KC_L,    KC_BSPC, \
+  KC_ESC,  KC_A,    KC_O,    KC_E,    KC_U,    KC_I,    KC_G,    KC_T,    KC_K,    KC_S,    KC_N,    KC_SLSH, \
+  KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_W,    KC_B,    KC_H,    KC_J,    KC_L,    KC_SCLN, KC_ENT , \
+  ADJUST,  KC_LCTL, KC_LALT, KC_LGUI, LOWER,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT \
+),
+[_EUCALYN_JP] = KEYMAP( \
+  KC_TAB,  KC_FN1,  KC_COMM, KC_DOT,  KC_F,    KC_M,    KC_R,    KC_D,    KC_Y,    KC_P,    KC_L,    KC_BSPC, \
+  KC_ESC,  KC_A,    KC_O,    KC_E,    KC_U,    KC_I,    KC_G,    KC_T,    KC_K,    KC_S,    KC_N,    KC_SLSH, \
+  OSM(MOD_LSFT), KC_Z,    KC_X,    KC_C,    KC_V,    KC_W,    KC_B,    KC_H,    KC_J,    KC_L,    KC_FN1,  KC_ENT , \
+  ADJUST,  KC_LCTL, KC_LALT, KC_LGUI, LOWER,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT \
+),
+
 /* Lower
  * ,-----------------------------------------------------------------------------------.
  * |   ~  |   !  |   @  |   #  |   $  |   %  |   ^  |   &  |   *  |   (  |   )  | Bksp |
@@ -171,18 +198,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,-----------------------------------------------------------------------------------.
  * |      | Reset|      |      |      |      |      |      |      |      |      |  Del |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |      |      |      |Aud on|Audoff|AGnorm|AGswap|Qwerty|Colemk|Dvorak|      |      |
+ * |      |      |      |Aud on|Audoff|AGnorm|AGswap|Qwerty|Colemk|Dvorak|Eucaln|      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      |      |      |      |      |      |      |      |      |      |      |      |
+ * |      |      |      |      |      |      |HueUp |HueDn |SaUp  |SaDn  |VaUp  |VaDn  |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * |      |      |      |      |      |             |      |      |      |      |      |
  * `-----------------------------------------------------------------------------------'
  */
 [_ADJUST] =  KEYMAP( \
   _______, RESET,   _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_DEL, \
-  _______, _______, _______, AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, QWERTY,  COLEMAK, DVORAK,  _______, _______, \
+  _______, _______, _______, AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, QWERTY,  COLEMAK, DVORAK,  EUCALYN, _______, \
   _______, _______, _______, _______, _______, _______, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD, RGB_VAI, RGB_VAD, \
-  _______, _______, _______, _______, _______, _______, _______, _______, RGB_M_B, RGB_M_R, RGB_M_K, RGB_M_X \
+  _______, _______, _______, _______, _______, _______, _______, _______, RGB_M_B, RGB_M_R, RGB_M_K, RGB_M_SW \
 )
 
 
@@ -251,6 +278,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
+    case EUCALYN:
+      if (record->event.pressed) {
+        #ifdef AUDIO_ENABLE
+          PLAY_SONG(tone_dvorak);
+        #endif
+        persistent_default_layer_set(1UL<<_EUCALYN_JP);
+      }
+      return false;
+      break;
     case LOWER:
       if (record->event.pressed) {
         layer_on(_LOWER_JP);
@@ -303,13 +339,17 @@ void action_function(keyrecord_t *record, uint8_t id, uint8_t opt) {
           case _LOWER_JP:
             base = _LOWER;
             break;
+          case _EUCALYN_JP:
+            base = _EUCALYN;
+            break;
           case _RAISE_JP:
             base = _RAISE;
             break;
           default:
             base = _QWERTY;
+            break;
         }
         action_pseudo_lut(record, base, keymap_jis2us);
         break;
-      }
   }
+}
