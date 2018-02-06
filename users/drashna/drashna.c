@@ -16,8 +16,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "drashna.h"
-#include "quantum.h"
-#include "action.h"
 #include "version.h"
 
 #if (__has_include("secrets.h"))
@@ -31,6 +29,15 @@ PROGMEM const char secret[][64] = {
   "test5"
 };
 #endif
+
+#ifdef FAUXCLICKY_ENABLE
+float fauxclicky_pressed_note[2]  = MUSICAL_NOTE(_A6, 2);  // (_D4, 0.25);
+float fauxclicky_released_note[2] = MUSICAL_NOTE(_A6, 2); // (_C4, 0.125);
+#else
+float fauxclicky_pressed[][2]             = SONG(E__NOTE(_A6)); // change to your tastes
+float fauxclicky_released[][2]             = SONG(E__NOTE(_A6)); // change to your tastes
+#endif 
+bool faux_click_enabled = true;
 
 #ifdef TAP_DANCE_ENABLE
 //define diablo macro timer variables
@@ -159,7 +166,7 @@ void matrix_init_user(void) {
   }
 #endif
 #ifdef AUDIO_ENABLE
-//  _delay_ms(21); // gets rid of tick
+//  wait_ms(21); // gets rid of tick
 //  stop_all_notes();
 //  PLAY_SONG(tone_hackstartup);
 #endif
@@ -224,9 +231,20 @@ void persistent_default_layer_set(uint16_t default_layer) {
 // Defines actions tor my global custom keycodes. Defined in drashna.h file
 // Then runs the _keymap's recod handier if not processed here
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  
+
 #ifdef CONSOLE_ENABLE
   xprintf("KL: row: %u, column: %u, pressed: %u\n", record->event.key.col, record->event.key.row, record->event.pressed);
+#endif
+
+#ifdef AUDIO_ENABLE
+  if (faux_click_enabled) {
+    if (record->event.pressed) {
+      PLAY_SONG(fauxclicky_pressed);
+    } else {
+      stop_note(NOTE_A6);
+      PLAY_SONG(fauxclicky_released);
+    }
+  }
 #endif
 
   switch (keycode) {
@@ -297,7 +315,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
     return false;
     break;
-#if !(defined(KEYBOARD_orthodox_rev1) || defined(KEYBOARD_ergodox_ez))
+#if !(defined(KEYBOARD_orthodox_rev1) || defined(KEYBOARD_orthodox_rev3) || defined(KEYBOARD_ergodox_ez))
   case KC_OVERWATCH:
     if (record->event.pressed) {
       is_overwatch = !is_overwatch;
@@ -311,7 +329,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!record->event.pressed) {
       register_code(is_overwatch ? KC_BSPC : KC_ENTER);
       unregister_code(is_overwatch ? KC_BSPC : KC_ENTER);
-      _delay_ms(50);
+      wait_ms(50);
       SEND_STRING("Salt, salt, salt...");
       register_code(KC_ENTER);
       unregister_code(KC_ENTER);
@@ -322,7 +340,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!record->event.pressed) {
       register_code(is_overwatch ? KC_BSPC : KC_ENTER);
       unregister_code(is_overwatch ? KC_BSPC : KC_ENTER);
-      _delay_ms(50);
+      wait_ms(50);
       SEND_STRING("Please sir, can I have some more salt?!");
       register_code(KC_ENTER);
       unregister_code(KC_ENTER);
@@ -333,7 +351,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!record->event.pressed) {
       register_code(is_overwatch ? KC_BSPC : KC_ENTER);
       unregister_code(is_overwatch ? KC_BSPC : KC_ENTER);
-      _delay_ms(50);
+      wait_ms(50);
       SEND_STRING("Your salt only makes me harder, and even more aggressive!");
       register_code(KC_ENTER);
       unregister_code(KC_ENTER);
@@ -344,7 +362,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!record->event.pressed) {
       register_code(is_overwatch ? KC_BSPC : KC_ENTER);
       unregister_code(is_overwatch ? KC_BSPC : KC_ENTER);
-      _delay_ms(50);
+      wait_ms(50);
       SEND_STRING("Good game, everyone!");
       register_code(KC_ENTER);
       unregister_code(KC_ENTER);
@@ -355,7 +373,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!record->event.pressed) {
       register_code(is_overwatch ? KC_BSPC : KC_ENTER);
       unregister_code(is_overwatch ? KC_BSPC : KC_ENTER);
-      _delay_ms(50);
+      wait_ms(50);
       SEND_STRING("Good luck, have fun!!!");
       register_code(KC_ENTER);
       unregister_code(KC_ENTER);
@@ -366,7 +384,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!record->event.pressed) {
       register_code(is_overwatch ? KC_BSPC : KC_ENTER);
       unregister_code(is_overwatch ? KC_BSPC : KC_ENTER);
-      _delay_ms(50);
+      wait_ms(50);
       SEND_STRING("Left click to win!");
       register_code(KC_ENTER);
       unregister_code(KC_ENTER);
@@ -377,7 +395,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!record->event.pressed) {
       register_code(is_overwatch ? KC_BSPC : KC_ENTER);
       unregister_code(is_overwatch ? KC_BSPC : KC_ENTER);
-      _delay_ms(50);
+      wait_ms(50);
       SEND_STRING("It may be a game, but if you don't want to actually try, please go play AI, so that people that actually want to take the game seriously and \"get good\" have a place to do so without trolls like you throwing games.");
       register_code(KC_ENTER);
       unregister_code(KC_ENTER);
@@ -388,7 +406,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!record->event.pressed) {
       register_code(is_overwatch ? KC_BSPC : KC_ENTER);
       unregister_code(is_overwatch ? KC_BSPC : KC_ENTER);
-      _delay_ms(50);
+      wait_ms(50);
       SEND_STRING("That was positively riveting!");
       register_code(KC_ENTER);
       unregister_code(KC_ENTER);
@@ -399,9 +417,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!record->event.pressed) {
       register_code(is_overwatch ? KC_BSPC : KC_ENTER);
       unregister_code(is_overwatch ? KC_BSPC : KC_ENTER);
-      _delay_ms(50);
+      wait_ms(50);
       SEND_STRING("That aim is absolutely amazing. It's almost like you're a machine!" SS_TAP(X_ENTER));
-      _delay_ms(3000);
+      wait_ms(3000);
       register_code(is_overwatch ? KC_BSPC : KC_ENTER);
       unregister_code(is_overwatch ? KC_BSPC : KC_ENTER);
       SEND_STRING("Wait! That aim is TOO good!  You're clearly using an aim hack! CHEATER!" SS_TAP(X_ENTER));
@@ -412,7 +430,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!record->event.pressed) {
       register_code(is_overwatch ? KC_BSPC : KC_ENTER);
       unregister_code(is_overwatch ? KC_BSPC : KC_ENTER);
-      _delay_ms(50);
+      wait_ms(50);
       SEND_STRING("OMG!!!  C9!!!");
       register_code(KC_ENTER);
       unregister_code(KC_ENTER);
@@ -423,7 +441,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!record->event.pressed) {
       register_code(is_overwatch ? KC_BSPC : KC_ENTER);
       unregister_code(is_overwatch ? KC_BSPC : KC_ENTER);
-      _delay_ms(50);
+      wait_ms(50);
       SEND_STRING("That was a fantastic game, though it was a bit easy. Try harder next time!");
       register_code(KC_ENTER);
       unregister_code(KC_ENTER);
@@ -450,23 +468,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
        ":dfu"
 #elif defined(BOOTLOADER_HALFKAY)
       ":teensy"
-#elif defined(BOOTLOADER_CATERINA)
-       ":avrdude"
-#endif
-#ifdef RGBLIGHT_ENABLE
-        " RGBLIGHT_ENABLE=yes"
-#else
-        " RGBLIGHT_ENABLE=no"
-#endif
-#ifdef AUDIO_ENABLE
-        " AUDIO_ENABLE=yes"
-#else
-        " AUDIO_ENABLE=no"
-#endif
-#ifdef FAUXCLICKY_ENABLE
-        " FAUXCLICKY_ENABLE=yes"
-#else
-        " FAUXCLICKY_ENABLE=no" 
+//#elif defined(BOOTLOADER_CATERINA)
+//       ":avrdude"
 #endif
         SS_TAP(X_ENTER));
     }
@@ -498,6 +501,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   case KC_SECRET_1 ... KC_SECRET_5:
     if (!record->event.pressed) {
       send_string_P(secret[keycode - KC_SECRET_1]);
+    }
+    return false;
+    break;
+  case KC_FXCL:
+    if (!record->event.pressed) {
+      faux_click_enabled = !faux_click_enabled;
     }
     return false;
     break;
@@ -572,6 +581,7 @@ uint32_t layer_state_set_user(uint32_t state) {
     case _COVECUBE:
       rgblight_set_green;
       rgblight_mode(2);
+      break;
     default:
       if (default_layer & (1UL << _COLEMAK)) {
         rgblight_set_magenta;
