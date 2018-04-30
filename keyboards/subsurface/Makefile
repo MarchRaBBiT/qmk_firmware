@@ -1,19 +1,11 @@
 
 
-
-ifdef TEENSY2
-    OPT_DEFS += -DATREUS_TEENSY2
-    ATRUES_UPLOAD_COMMAND = teensy_loader_cli -w -mmcu=$(MCU) $(TARGET).hex
-else
-    OPT_DEFS += -DATREUS_ASTAR
-    OPT_DEFS += -DCATERINA_BOOTLOADER
-    ATRUES_UPLOAD_COMMAND = while [ ! -r $(USB) ]; do sleep 1; done; \
-                            avrdude -p $(MCU) -c avr109 -U flash:w:$(TARGET).hex -P $(USB)
-endif
+OPT_DEFS += -DATREUS_TEENSY2
+ATRUES_UPLOAD_COMMAND = teensy_loader_cli -w -mmcu=$(MCU) $(TARGET).hex
 
 # MCU name
-#MCU = at90usb1287
-MCU = atmega32u4
+MCU = at90usb1286
+# MCU = atmega32u4
 
 # Processor frequency.
 #     This will define a symbol, F_CPU, in all source code files equal to the
@@ -58,7 +50,7 @@ OPT_DEFS += -DINTERRUPT_CONTROL_ENDPOINT
 #   Atmel DFU loader 4096
 #   LUFA bootloader  4096
 #   USBaspLoader     2048
-OPT_DEFS += -DBOOTLOADER_SIZE=4096
+OPT_DEFS += -DBOOTLOADER_SIZE=1024
 
 
 # Build Options
@@ -82,3 +74,9 @@ UNICODE_ENABLE ?= YES 		# Unicode
 ifndef QUANTUM_DIR
 	include ../../Makefile
 endif
+
+USB ?= /dev/cu.usbmodem1411
+
+upload: build
+	$(ATRUES_UPLOAD_COMMAND)
+	
