@@ -33,13 +33,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "config.h"
 
 #ifdef USE_I2C
-#  include "i2c.h"
+  #include "i2c.h"
 #else // USE_SERIAL
-#  include "serial.h"
+  #include "serial.h"
 #endif
 
 #ifndef DEBOUNCE
-#  define DEBOUNCE	5
+  #define DEBOUNCE	5
 #endif
 
 #define ERROR_DISCONNECT_COUNT 5

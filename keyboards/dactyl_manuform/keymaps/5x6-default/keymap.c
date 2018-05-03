@@ -1,4 +1,4 @@
-#include "dactyl-manuform.h"
+#include "dactyl_manuform.h"
 #include "action_layer.h"
 #include "eeconfig.h"
 
@@ -39,16 +39,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // left hand
    _______,  KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5, 
    _______,  _______,  KC_HOME,  KC_UP,    KC_END,   KC_PGUP,
-   _______,  _______,  KC_LEFT,  KC_DOWN,  KC_RIGHT, KC_PGDN,
-   RESET,    _______,  _______,  _______,  _______,  _______,
-                       _______,  _______, 
+   _______,  RGB_VAI,  KC_LEFT,  KC_DOWN,  KC_RIGHT, KC_PGDN,
+   RESET,    RGB_VAD,  RGB_HUI,  RGB_SAI,  _______,  _______,
+                       RGB_HUD,  RGB_SAD, 
                                LT(_FN, KC_DEL), KC_LSFT, 
                                KC_SPC,   KC_LCTRL,
                                KC_ENTER, KC_LALT,
         // right hand
                      KC_F6,    KC_F7,    KC_F8,    KC_F9,     KC_F10,  KC_F11,
                      KC_PGUP,  KC_HOME,  KC_UP,    KC_END,   _______,  KC_F12,
-                     KC_PGDN,  KC_LEFT,  KC_DOWN,  KC_RIGHT, _______, _______,
+                     KC_PGDN,  KC_LEFT,  KC_DOWN,  KC_RIGHT, RGB_M_B, RGB_TOG,
                      KC_CALC,  KC_MAIL,  KC_MYCM,  KC_WHOM,  _______,   RESET,
                                          _______,  _______,
         KC_SPC, LT(_FN, KC_BSPC), 
