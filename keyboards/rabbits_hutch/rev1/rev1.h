@@ -1,6 +1,6 @@
-#ifndef RABBITS_HATCH_H
-#define RABBITS_HATCH_H
-#include "rabbits_hatch.h"
+#ifndef RABBITS_HUTCH_REV1_H
+#define RABBITS_HUTCH_REV1_H
+#include "rabbits_hutch.h"
 
 #define LAYOUT(k00, k01, k02, k03, k04, \
                k10, k11, k12, k13, k14, \

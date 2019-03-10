@@ -1,5 +1,5 @@
 /*
-Copyright 2012,2013 Jun Wako <wakojun@gmail.com>
+Copyright 2019 Toshiki Yagi <mrabbit@usagigoya.jp>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "rabbits_hatch.h"
+#include "rabbits_hutch.h"
 
 const uint16_t keymaps[][MATRIX_ROWS][MATRIX_COLS] =
 { LAYOUT(
