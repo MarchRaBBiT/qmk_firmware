@@ -7,4 +7,4 @@ SLEEP_LED_ENABLE = yes  # Breathing sleep LED during USB suspend
 NKRO_ENABLE = yes	    # USB Nkey Rollover
 CUSTOM_MATRIX = yes # Custom matrix file
 
-DEFAULT_FOLDER = rabbits_hatch/rev1
+DEFAULT_FOLDER = rabbits_hutch/rev1
