@@ -1,5 +1,5 @@
 # project specific files
-SRC =	matrix.c
+# SRC =	matrix.c
 
 ## chip/board settings
 # the next two should match the directories in
