@@ -18,6 +18,6 @@
 #define MATRIX_COLS 5
 
 #define DIRECT_PINS { {A8, A9, A10, A15, B3}, {A7, A6, A3, A2, B4}, {A5, A4, B7, B6, B5} }
-#define UNUSED_PINS { F0, F1 }
+#define UNUSED_PINS {}
 
 #endif /* RABBITS_HATCH_REV1_CONFIG_H_ */
