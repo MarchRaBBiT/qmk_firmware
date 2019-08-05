@@ -42,8 +42,8 @@
  * #define MATRIX_COL_PINS { PA2, PA3, PA6, PB14, PB15, PA8, PA9, PA7, PB3, PB4, PC14, PC15, PC13, PB5, PB6 }
  * #define UNUSED_PINS
  */
-#define MATRIX_ROW_PINS { PA0, PA1, PA2, PA3, PA4 }
-#define MATRIX_COL_PINS { PB8, PB9, PB10, PB11, PB12, PB13, PB14 }
+#define MATRIX_ROW_PINS { A0, A1, A2, A3, A4 }
+#define MATRIX_COL_PINS { B8, B9, B10, B11, B12, B13, B14 }
 
 /* Debounce reduces chatter (unintended double-presses) - set 0 if debouncing is not needed */
 // #define DEBOUNCE 6
