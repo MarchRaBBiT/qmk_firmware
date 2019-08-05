@@ -79,18 +79,19 @@ void matrix_init(void)
 
 uint8_t matrix_scan(void)
 {
+    matrix_row_t cols;
     for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
         if (i < MATRIX_ROWS / 2) {
             // left hand(master)
+            wait_us(30);
             select_direct_row(i);
-            matrix_row_t cols = read_direct_cols();
+            cols = read_master_cols();
         } else {
             // right hand(slave)
+            wait_us(30);
             select_expander_row(i - MATRIX_ROWS / 2);
-            matrix_row_t cols = read_expander_cols();
+            cols = read_expander_cols();
         }
-        wait_us(30);
-        matrix_row_t cols = read_cols(i);
         if (matrix_debouncing[i] != cols) {
             matrix_debouncing[i] = cols;
             if (debouncing) {
@@ -144,6 +145,11 @@ static void init_cols(void)
     palSetPadMode(GPIOB, 7, PAL_MODE_STM32_ALTERNATE_OPENDRAIN);   /* SDA */
     palSetPadMode(GPIOB, 10, PAL_MODE_STM32_ALTERNATE_OPENDRAIN);   /* SCL */
     palSetPadMode(GPIOB, 11, PAL_MODE_STM32_ALTERNATE_OPENDRAIN);   /* SDA */
+}
+
+static matrix_row_t read_master_cols(uint8_t row)
+{
+    return (matrix_row_t)0;
 }
 
 /* Returns status of switches(1:on, 0:off) */
