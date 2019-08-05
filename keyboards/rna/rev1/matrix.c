@@ -11,7 +11,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+#include "quantum.h"
 #include "ch.h"
 #include "hal.h"
 
@@ -23,12 +23,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "util.h"
 #include "matrix.h"
 #include "wait.h"
+#include "config.h"
 
 #ifndef DEBOUNCE
 #   define DEBOUNCE 5
 #endif
 static uint8_t debouncing = DEBOUNCE;
 
+static pin_t master_row_pins[(MATRIX_ROWS + 1) / 2] = MATRIX_ROW_PINS;
+static pin_t master_col_pins[MATRIX_COLS] = MATRIX_COL_PINS;
 /* matrix state(1:on, 0:off) */
 static matrix_row_t matrix[MATRIX_ROWS];
 static matrix_row_t matrix_debouncing[MATRIX_ROWS];
@@ -83,13 +86,13 @@ uint8_t matrix_scan(void)
     for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
         if (i < MATRIX_ROWS / 2) {
             // left hand(master)
-            wait_us(30);
             select_direct_row(i);
+            wait_us(30);
             cols = read_master_cols();
         } else {
             // right hand(slave)
-            wait_us(30);
             select_expander_row(i - MATRIX_ROWS / 2);
+            wait_us(30);
             cols = read_expander_cols();
         }
         if (matrix_debouncing[i] != cols) {
@@ -112,6 +115,19 @@ uint8_t matrix_scan(void)
     }
 
     return 1;
+}
+
+inline
+void select_direct_row(uint8_t row)
+{
+    setPinOutput(master_row_pins[row]);
+    writePinLow(master_row_pins[row]);
+}
+
+inline
+void unselect_direct_row(uint8_t row)
+{
+    setPinInputHigh(master_row_pins[row]);
 }
 
 inline
@@ -140,6 +156,12 @@ void matrix_print(void)
  */
 static void init_cols(void)
 {
+    unselect_master_rows();
+    init_slave_expander();
+}
+
+static void init_slave_expander(void)
+{
     // setup I2C hardware
     palSetPadMode(GPIOB, 6, PAL_MODE_STM32_ALTERNATE_OPENDRAIN);   /* SCL */
     palSetPadMode(GPIOB, 7, PAL_MODE_STM32_ALTERNATE_OPENDRAIN);   /* SDA */
@@ -147,8 +169,18 @@ static void init_cols(void)
     palSetPadMode(GPIOB, 11, PAL_MODE_STM32_ALTERNATE_OPENDRAIN);   /* SDA */
 }
 
+static void unselect_master_rows(void)
+{
+    uint8_t row;
+    for (row = 0; row < MATRIX_ROWS / 2; row++){
+        unselect_direct_row(row);
+    }
+}
+
 static matrix_row_t read_master_cols(uint8_t row)
 {
+    writePinLow(MATRIX_ROW_PINS[row]);
+
     return (matrix_row_t)0;
 }
 
