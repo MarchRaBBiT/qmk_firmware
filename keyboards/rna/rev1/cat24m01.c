@@ -49,6 +49,7 @@ void CAT24M01_WritePage(const uint32_t Address, const uint8_t *Values, size_t le
     memcpy(buf + 2, Values, len);
     i2cStart(i2c_drv, i2c_cfg);
     i2cMasterTransmitTimeout(i2c_drv, issue_address, buf, 2 + len, NULL, 0, TIME_INFINITE);
+    
 }
 
 uint8_t eeprom_read_byte (const uint8_t *Address)

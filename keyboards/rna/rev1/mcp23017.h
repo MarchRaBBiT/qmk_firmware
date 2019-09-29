@@ -70,5 +70,7 @@ void expander_init(I2CDriver *drv, I2CConfig *cfg);
 void expander_select(uint8_t pin);
 void expander_unselect(uint8_t pin);
 void expander_unselect_all(void);
+uint8_t expander_read_gpioa(void);
+uint8_t expander_read_gpiob(void);
 
 #endif
