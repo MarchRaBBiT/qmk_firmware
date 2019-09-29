@@ -85,6 +85,7 @@ I2CConfig *i2c_cfg;
 void expander_init(I2CDriver *drv, I2CConfig *cfg) {
     i2c_drv = drv;
     i2c_cfg = cfg;
+    expander_config();
     return;
 }
 #endif
@@ -128,6 +129,20 @@ void expander_config() {
     expander_write(EXPANDER_REG_IPOLB, 0x0);
 }
 
+uint8_t expander_read_gpioa()
+{
+    uint8_t val = 0;
+    uint8_t result = expander_read(EXPANDER_REG_GPIOA, &val, sizeof(val));
+    return val;
+}
+
+uint8_t expander_read_gpiob()
+{
+    uint8_t val = 0;
+    uint8_t result = expander_read(EXPANDER_REG_GPIOB, &val, sizeof(val));
+    return val;
+}
+
 uint8_t bit_for_pin(uint8_t pin) {
     return pin % 8;
 }
@@ -148,5 +163,6 @@ uint8_t expander_write(uint8_t reg, unsigned char val) {
 
 uint8_t expander_read(uint8_t reg, uint8_t *data, size_t count) {
     uint8_t addr = reg;
-    uint8_t result = i2cMasterReceiveTimeout(i2c_drv, addr, data, count, I2C_TIMEOUT);
+    uint8_t result = i2cMasterTransmitTimeout(i2c_drv, addr, NULL, 0, data, count, I2C_TIMEOUT);
+    return result == 0;
 }

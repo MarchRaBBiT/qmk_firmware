@@ -23,21 +23,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "util.h"
 #include "matrix.h"
 #include "wait.h"
+#include "mcp23017.h"
 #include "config.h"
 
 #ifndef DEBOUNCE
 #   define DEBOUNCE 5
 #endif
+#define ROW_SHIFTER ((matrix_row_t)1)
 static uint8_t debouncing = DEBOUNCE;
 
 static pin_t master_row_pins[(MATRIX_ROWS + 1) / 2] = MATRIX_ROW_PINS;
 static pin_t master_col_pins[MATRIX_COLS] = MATRIX_COL_PINS;
+static const uint8_t expander_row_pins[MATRIX_ROWS] = EXPANDER_MATRIX_ROW_PINS;
+static const uint8_t expander_col_pins[MATRIX_COLS] = EXPANDER_MATRIX_COL_PINS;
 /* matrix state(1:on, 0:off) */
 static matrix_row_t matrix[MATRIX_ROWS];
 static matrix_row_t matrix_debouncing[MATRIX_ROWS];
 static uint8_t matrix_row_read[2] = { 0xff, 0xff };
-
 static uint8_t read_command = 0;
+static uint16_t expander_col_mask = 0;
 
 static matrix_row_t read_cols(uint8_t row);
 static void init_cols(void);
@@ -118,19 +122,6 @@ uint8_t matrix_scan(void)
 }
 
 inline
-void select_direct_row(uint8_t row)
-{
-    setPinOutput(master_row_pins[row]);
-    writePinLow(master_row_pins[row]);
-}
-
-inline
-void unselect_direct_row(uint8_t row)
-{
-    setPinInputHigh(master_row_pins[row]);
-}
-
-inline
 bool matrix_is_on(uint8_t row, uint8_t col)
 {
     return (matrix[row] & ((matrix_row_t)1<<col));
@@ -152,6 +143,61 @@ void matrix_print(void)
     }
 }
 
+inline
+void select_direct_row(uint8_t row)
+{
+    setPinOutput(master_row_pins[row]);
+    writePinLow(master_row_pins[row]);
+}
+
+inline
+void unselect_direct_row(uint8_t row)
+{
+    setPinInputHigh(master_row_pins[row]);
+}
+
+static matrix_row_t read_master_cols()
+{
+    matrix_row_t cols = (matrix_row_t)0;
+    for (int i = 0 ; i < matrix_cols(); i++) {
+        // Select the col pin to read (active low)
+        uint8_t pin_state = readPin(master_col_pins[i]);
+
+        // Populate the matrix row with the state of the col pin
+        cols |=  pin_state ? 0 : (ROW_SHIFTER << i);
+    }
+
+    return cols;
+}
+
+inline
+void select_expander_row(uint8_t row)
+{
+    expander_select(expander_row_pins[row]);
+}
+
+inline
+void unselect_expander_row(uint8_t row)
+{
+    expander_unselect(row);
+}
+
+static matrix_row_t read_expander_cols()
+{
+    matrix_row_t cols = (matrix_row_t)0;
+    uint16_t expander_pinstates = 0;
+    if (expander_col_mask & 0xff) {
+        expander_pinstates |= expander_read_gpioa();
+    }
+    if (expander_col_mask & 0xff00) {
+        expander_pinstates |= (uint16_t)expander_read_gpiob() << 8;
+    }
+    for(int i=0; i < matrix_cols(); i++) {
+        uint8_t pin_state = expander_pinstates | (1 << expander_col_pins[i]);
+        cols |= pin_state ? 0 : (ROW_SHIFTER << i);
+    }
+    return cols;
+}
 /* Column pin configuration
  */
 static void init_cols(void)
@@ -167,6 +213,7 @@ static void init_slave_expander(void)
     palSetPadMode(GPIOB, 7, PAL_MODE_STM32_ALTERNATE_OPENDRAIN);   /* SDA */
     palSetPadMode(GPIOB, 10, PAL_MODE_STM32_ALTERNATE_OPENDRAIN);   /* SCL */
     palSetPadMode(GPIOB, 11, PAL_MODE_STM32_ALTERNATE_OPENDRAIN);   /* SDA */
+    expander_init(&I2CD1, &i2ccfg);
 }
 
 static void unselect_master_rows(void)
@@ -177,36 +224,3 @@ static void unselect_master_rows(void)
     }
 }
 
-static matrix_row_t read_master_cols(uint8_t row)
-{
-    writePinLow(MATRIX_ROW_PINS[row]);
-
-    return (matrix_row_t)0;
-}
-
-/* Returns status of switches(1:on, 0:off) */
-static matrix_row_t read_cols(uint8_t row)
-{
-    msg_t status = MSG_OK;
-
-    if (MSG_OK != status) {
-        i2cflags_t error_code;
-        error_code = i2cGetErrors(i2cDrivers[row]);
-        printf("I2C TX Error: %x\n", error_code);
-        return (matrix_row_t)0;
-    }
-
-    status = i2cMasterReceive(i2cDrivers[row], addresses[row], matrix_row_read, 2);
-
-    if (MSG_OK != status) {
-        i2cflags_t error_code;
-        error_code = i2cGetErrors(i2cDrivers[row]);
-        printf("I2C RX Error: %x\n", error_code);
-        return (matrix_row_t)0;
-    }
-
-    uint8_t low = ~matrix_row_read[0];
-    uint8_t high = ~matrix_row_read[1];
-
-    return high<<8 | low;
-}
