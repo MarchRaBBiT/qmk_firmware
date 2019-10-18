@@ -9,6 +9,6 @@
 #define CAT24M01_WRITE 0x0
 #define CAT24M01_PAGESIZE 256
 
-void CAT24M01_Init(I2CDriver *drv, I2CConfig *cfg);
+void CAT24M01_Init(I2CDriver *drv, const I2CConfig *cfg);
 #endif
 

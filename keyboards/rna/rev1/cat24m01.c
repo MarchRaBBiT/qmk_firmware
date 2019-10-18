@@ -5,9 +5,14 @@
 #include "cat24m01.h"
 
 I2CDriver *i2c_drv;
-I2CConfig *i2c_cfg;
+const I2CConfig *i2c_cfg;
 
-void CAT24M01_Init(I2CDriver *drv, I2CConfig *cfg)
+uint8_t CAT24M01_SecRead(const uint32_t Address, uint8_t *buf, size_t size);
+uint8_t CAT24M01_SelectiveRead(const uint32_t Address);
+void CAT24M01_WriteDataByte(const uint32_t Address, uint8_t Value);
+void CAT24M01_WritePage(const uint32_t Address, const uint8_t *Values, size_t len);
+
+void CAT24M01_Init(I2CDriver *drv, const I2CConfig *cfg)
 {
     i2c_drv = drv;
     i2c_cfg = cfg;
@@ -27,7 +32,7 @@ uint8_t CAT24M01_SecRead(const uint32_t Address, uint8_t *buf, size_t size)
         return 0xff;
     }
     i2cStart(i2c_drv, i2c_cfg);
-    i2cMasterTransmitTimeout(i2c_drv, issue_address, &read_address, 2, &buf, size, TIME_INFINITE);
+    i2cMasterTransmitTimeout(i2c_drv, issue_address, (uint8_t *)&read_address, 2, buf, size, TIME_INFINITE);
     return *buf;
 }
 
@@ -49,7 +54,7 @@ void CAT24M01_WritePage(const uint32_t Address, const uint8_t *Values, size_t le
     memcpy(buf + 2, Values, len);
     i2cStart(i2c_drv, i2c_cfg);
     i2cMasterTransmitTimeout(i2c_drv, issue_address, buf, 2 + len, NULL, 0, TIME_INFINITE);
-    
+
 }
 
 uint8_t eeprom_read_byte (const uint8_t *Address)
@@ -74,7 +79,7 @@ uint16_t eeprom_read_word (const uint16_t *Address)
 {
     uint8_t buf[2];
     const uint32_t p = (const uint32_t) Address;
-    int result = CAT24M01_ReadPage(p, buf, 2);
+    CAT24M01_SecRead(p, buf, 2);
     return *(uint16_t *)buf;
 }
 
@@ -154,7 +159,7 @@ void eeprom_write_block(const void *buf, void *addr, uint32_t len) {
     }
     const uint8_t *src = (const uint8_t *)buf;
     while (len--) {
-        eeprom_write_byte(p++, *src++);
+        eeprom_write_byte((uint8_t *)p++, *src++);
     }
 }
 
