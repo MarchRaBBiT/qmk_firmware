@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //   -include keyboards/helix/rev?/keymaps/MAPNAME/config.h
 //   XXXX.c
 
-#include <serial_config.h>
+// #include <serial_config.h>
 
 // GCC include search path in qmk_firmare/keyboards/helix/
 //    #include "..." search starts here:

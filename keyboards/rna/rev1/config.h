@@ -44,8 +44,8 @@
  */
 #define MATRIX_ROW_PINS { A0, A1, A2, A3, A4 }
 #define MATRIX_COL_PINS { B8, B9, B10, B11, B12, B13, B14 }
-#define EXPANDER_ROW_PINS { GPA0, GPA1, GPA2, GPA3, GPA4 }
-#define EXPANDER_COL_PINS { GPB0, GPB1, GPB2, GPB3, GPB4, GPB5, GPB6 }
+#define EXPANDER_MATRIX_ROW_PINS { GPA0, GPA1, GPA2, GPA3, GPA4 }
+#define EXPANDER_MATRIX_COL_PINS { GPB0, GPB1, GPB2, GPB3, GPB4, GPB5, GPB6 }
 /* Debounce reduces chatter (unintended double-presses) - set 0 if debouncing is not needed */
 // #define DEBOUNCE 6
 

@@ -1,10 +1,11 @@
 # project specific files
-SRC = matrix.c
-LAYOUTS += helix
+SRC = matrix.c mcp23017.c cat24m01.c
 
 # Cortex version
 MCU_FAMILY = STM32
-MCU = STM32L433
+MCU = STM32L432
+MCU_SERIES = STM32L4xx
+PLATFORM_NAME = platform_l432
 
 MCU_STARTUP = stm32l4xx
 
@@ -21,7 +22,7 @@ OPT_DEFS += -DINTERRUPT_CONTROL_ENDPOINT
 #
 BOOTMAGIC_ENABLE = yes      # Virtual DIP switch configuration(+1000)
 ## (Note that for BOOTMAGIC on Teensy LC you have to use a custom .ld script.)
-MOUSEKEY_ENABLE = yes      # Mouse keys(+4700)
+MOUSEKEY_ENABLE = no      # Mouse keys(+4700)
 EXTRAKEY_ENABLE = yes       # Audio control and System control(+450)
 CONSOLE_ENABLE = yes         # Console for debug(+400)
 COMMAND_ENABLE = yes       # Commands for debug and configuration
@@ -42,5 +43,5 @@ CUSTOM_MATRIX = yes # Custom matrix file
 # SERIAL_LINK_ENABLE = yes
 ENCODER_ENABLE = no
 
-LAYOUTS = ortho_4x12 planck_mit
+# LAYOUTS = ortho_4x12 planck_mit
 LAYOUTS_HAS_RGB = no

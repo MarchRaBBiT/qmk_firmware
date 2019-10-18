@@ -17,7 +17,7 @@
 #define MAP23017_H
 
 #define EXPANDER_ADDR 0x27
-#define I2C_TIMEOUT 200 // milliseconds
+#define EXPANDER_TIMEOUT 200 // milliseconds
 #define EXPANDER_PAUSE 0 // microseconds
 
 enum EXPANDER_REGISTERS {
@@ -65,7 +65,7 @@ enum EXPANDER_REGISTERS {
 #if defined(__AVR__)
 void expander_init(void);
 #else
-void expander_init(I2CDriver *drv, I2CConfig *cfg);
+void expander_init(I2CDriver *drv, const I2CConfig *cfg);
 #endif
 void expander_select(uint8_t pin);
 void expander_unselect(uint8_t pin);
