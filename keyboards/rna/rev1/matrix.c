@@ -11,9 +11,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "quantum.h"
 #include "ch.h"
 #include "hal.h"
+#include "quantum.h"
 
 /*
  * scan matrix
@@ -34,17 +34,24 @@ static uint8_t debouncing = DEBOUNCE;
 
 static pin_t master_row_pins[(MATRIX_ROWS + 1) / 2] = MATRIX_ROW_PINS;
 static pin_t master_col_pins[MATRIX_COLS] = MATRIX_COL_PINS;
-static const uint8_t expander_row_pins[MATRIX_ROWS] = EXPANDER_MATRIX_ROW_PINS;
+static const uint8_t expander_row_pins[(MATRIX_ROWS + 1) / 2] = EXPANDER_MATRIX_ROW_PINS;
 static const uint8_t expander_col_pins[MATRIX_COLS] = EXPANDER_MATRIX_COL_PINS;
 /* matrix state(1:on, 0:off) */
 static matrix_row_t matrix[MATRIX_ROWS];
 static matrix_row_t matrix_debouncing[MATRIX_ROWS];
-static uint8_t matrix_row_read[2] = { 0xff, 0xff };
-static uint8_t read_command = 0;
+// static uint8_t matrix_row_read[2] = { 0xff, 0xff };
+// static uint8_t read_command = 0;
 static uint16_t expander_col_mask = 0;
 
-static matrix_row_t read_cols(uint8_t row);
+static void select_direct_row(uint8_t row);
+static void unselect_direct_row(uint8_t row);
+static matrix_row_t read_direct_cols(void);
 static void init_cols(void);
+static void unselect_master_rows(void);
+static void select_expander_row(uint8_t row);
+// static void unselect_expander_row(uint8_t row);
+static matrix_row_t read_expander_cols(void);
+static void init_slave_expander(void);
 
 inline
 uint8_t matrix_rows(void)
@@ -62,9 +69,11 @@ uint8_t matrix_cols(void)
  * I2C1 config.
  */
 static const I2CConfig i2ccfg = {
-    OPMODE_I2C,
-    400000,
-    FAST_DUTY_CYCLE_2,
+    STM32_TIMINGR_PRESC(15U) |
+    STM32_TIMINGR_SCLDEL(4U) | STM32_TIMINGR_SDADEL(2U) |
+    STM32_TIMINGR_SCLH(15U)  | STM32_TIMINGR_SCLL(21U),
+    0,
+    0
 };
 
 void matrix_init(void)
@@ -92,7 +101,7 @@ uint8_t matrix_scan(void)
             // left hand(master)
             select_direct_row(i);
             wait_us(30);
-            cols = read_master_cols();
+            cols = read_direct_cols();
         } else {
             // right hand(slave)
             select_expander_row(i - MATRIX_ROWS / 2);
@@ -143,20 +152,20 @@ void matrix_print(void)
     }
 }
 
-inline
+static
 void select_direct_row(uint8_t row)
 {
     setPinOutput(master_row_pins[row]);
     writePinLow(master_row_pins[row]);
 }
 
-inline
+static
 void unselect_direct_row(uint8_t row)
 {
     setPinInputHigh(master_row_pins[row]);
 }
 
-static matrix_row_t read_master_cols()
+static matrix_row_t read_direct_cols()
 {
     matrix_row_t cols = (matrix_row_t)0;
     for (int i = 0 ; i < matrix_cols(); i++) {
@@ -170,17 +179,19 @@ static matrix_row_t read_master_cols()
     return cols;
 }
 
-inline
+static
 void select_expander_row(uint8_t row)
 {
     expander_select(expander_row_pins[row]);
 }
 
-inline
+/*
+static
 void unselect_expander_row(uint8_t row)
 {
-    expander_unselect(row);
+    expander_unselect(expander_row_pins[row]);
 }
+*/
 
 static matrix_row_t read_expander_cols()
 {
@@ -209,10 +220,10 @@ static void init_cols(void)
 static void init_slave_expander(void)
 {
     // setup I2C hardware
-    palSetPadMode(GPIOB, 6, PAL_MODE_STM32_ALTERNATE_OPENDRAIN);   /* SCL */
-    palSetPadMode(GPIOB, 7, PAL_MODE_STM32_ALTERNATE_OPENDRAIN);   /* SDA */
-    palSetPadMode(GPIOB, 10, PAL_MODE_STM32_ALTERNATE_OPENDRAIN);   /* SCL */
-    palSetPadMode(GPIOB, 11, PAL_MODE_STM32_ALTERNATE_OPENDRAIN);   /* SDA */
+    //palSetPadMode(GPIOB, 6, PAL_MODE_STM32_ALTERNATE_OPENDRAIN);   /* SCL */
+    //palSetPadMode(GPIOB, 7, PAL_MODE_STM32_ALTERNATE_OPENDRAIN);   /* SDA */
+    //palSetPadMode(GPIOB, 10, PAL_MODE_STM32_ALTERNATE_OPENDRAIN);   /* SCL */
+    //palSetPadMode(GPIOB, 11, PAL_MODE_STM32_ALTERNATE_OPENDRAIN);   /* SDA */
     expander_init(&I2CD1, &i2ccfg);
 }
 
@@ -224,3 +235,12 @@ static void unselect_master_rows(void)
     }
 }
 
+/*
+static void unselect_expander_rows(void)
+{
+    uint8_t row;
+    for (row = 0; row < MATRIX_ROWS / 2; row++) {
+        unselect_expander_row(row);
+    }
+}
+*/

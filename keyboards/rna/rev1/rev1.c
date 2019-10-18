@@ -1,5 +1,6 @@
 #include "ch.h"
 #include "hal.h"
+#include "quantum.h"
 #include "cat24m01.h"
 #include "mcp23017.h"
 

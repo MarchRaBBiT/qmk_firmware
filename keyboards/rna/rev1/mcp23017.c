@@ -57,6 +57,7 @@ void expander_init(void) {
 }
 
 #else
+/*
 static const char *i2cd_err_str(uint8_t res) {
     switch (res) {
         case I2C_NO_ERROR:
@@ -79,10 +80,11 @@ static const char *i2cd_err_str(uint8_t res) {
         return "UNKNOWN";
     }
 }
+*/
 I2CDriver *i2c_drv;
-I2CConfig *i2c_cfg;
+const I2CConfig *i2c_cfg;
 
-void expander_init(I2CDriver *drv, I2CConfig *cfg) {
+void expander_init(I2CDriver *drv, const I2CConfig *cfg) {
     i2c_drv = drv;
     i2c_cfg = cfg;
     expander_config();
@@ -132,14 +134,14 @@ void expander_config() {
 uint8_t expander_read_gpioa()
 {
     uint8_t val = 0;
-    uint8_t result = expander_read(EXPANDER_REG_GPIOA, &val, sizeof(val));
+    expander_read(EXPANDER_REG_GPIOA, &val, sizeof(val));
     return val;
 }
 
 uint8_t expander_read_gpiob()
 {
     uint8_t val = 0;
-    uint8_t result = expander_read(EXPANDER_REG_GPIOB, &val, sizeof(val));
+    expander_read(EXPANDER_REG_GPIOB, &val, sizeof(val));
     return val;
 }
 
@@ -150,10 +152,10 @@ uint8_t bit_for_pin(uint8_t pin) {
 uint8_t expander_write(uint8_t reg, unsigned char val) {
     uint8_t addr = reg;
 #if defined(__AVR__)
-    uint8_t result = TWI_WritePacket(EXPANDER_ADDR << 1, I2C_TIMEOUT, &addr, sizeof(addr), &val, sizeof(val));
+    uint8_t result = TWI_WritePacket(EXPANDER_ADDR << 1, EXPANDER_TIMEOUT, &addr, sizeof(addr), &val, sizeof(val));
 #else
     i2cStart(i2c_drv, i2c_cfg);
-    uint8_t result = i2cMasterTransmitTimeout(i2c_drv, addr, &val, sizeof(val), NULL, 0, I2C_TIMEOUT);
+    uint8_t result = i2cMasterTransmitTimeout(i2c_drv, addr, &val, sizeof(val), NULL, 0, EXPANDER_TIMEOUT);
 #endif
     if (result) {
         xprintf("mcp: set_register %d = %d failed: %s\n", reg, val, twi_err_str(result));
@@ -163,6 +165,6 @@ uint8_t expander_write(uint8_t reg, unsigned char val) {
 
 uint8_t expander_read(uint8_t reg, uint8_t *data, size_t count) {
     uint8_t addr = reg;
-    uint8_t result = i2cMasterTransmitTimeout(i2c_drv, addr, NULL, 0, data, count, I2C_TIMEOUT);
+    uint8_t result = i2cMasterTransmitTimeout(i2c_drv, addr, NULL, 0, data, count, EXPANDER_TIMEOUT);
     return result == 0;
 }
